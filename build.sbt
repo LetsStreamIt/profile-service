@@ -27,7 +27,7 @@ lazy val root = project
   .settings(
     name := "Template-for-Scala3-Projects",
     scalaVersion := scala3Version,
-    libraryDependencies += "org.scalameta" %% "munit" % "1.0.1" % Test,
+    libraryDependencies += "org.scalameta" %% "munit" % "1.0.2" % Test,
     semanticdbEnabled := true,
     scalacOptions += {
       if (scalaVersion.value.startsWith("2.12"))
