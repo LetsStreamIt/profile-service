@@ -3,7 +3,7 @@
     "@commitlint/cli": "^19.4.0",
     "@commitlint/config-conventional": "^19.2.2",
     "husky": "^9.1.4",
-    "semantic-release-preconfigured-conventional-commits": "1.1.110"
+    "semantic-release-preconfigured-conventional-commits": "1.1.111"
   },
   "engines": {
     "node": "20.18"
