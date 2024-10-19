@@ -11,6 +11,8 @@ class UserService(userRepository: UserRepository) {
     userRepository.getUser(email)
 
   def createUser(user: User): Future[Either[Exception, String]] =
-    // Add business validations or rules here if needed
     userRepository.createUser(user)
+
+  def addVideo(email: String, videoId: String): Future[Either[Exception, String]] =
+    userRepository.addVideo(email, videoId)
 }

@@ -7,7 +7,9 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives.*
 import akka.http.scaladsl.server.Route
 import io.letsstreamit.services.profile.core.models.User
+import io.letsstreamit.services.profile.core.models.Video
 import io.letsstreamit.services.profile.infrastructure.controllers.UserController
+import io.letsstreamit.services.profile.utils.AuthenticationDirectives.getTokenData
 import io.letsstreamit.services.profile.utils.AuthenticationDirectives.validateToken
 
 class UserRoutes(userController: UserController)(implicit system: ActorSystem[?]) {
@@ -16,31 +18,45 @@ class UserRoutes(userController: UserController)(implicit system: ActorSystem[?]
   import io.letsstreamit.services.profile.utils.JsonFormats.*
 
   val routes: Route =
-    pathPrefix("users") {
-      validateToken(system) { token =>
-        concat(
-          pathEnd {
+    validateToken(system) { token =>
+      concat(
+        pathPrefix("users") {
+          concat(
+            pathEnd {
+              post {
+                entity(as[User]) { user =>
+                  onSuccess(createUser(user)) {
+                    case Right(_) => complete(StatusCodes.Created)
+                    case Left(_) => complete(StatusCodes.BadRequest)
+                  }
+                }
+              }
+            },
+            path(Segment) { email =>
+              get {
+                rejectEmptyResponse {
+                  onSuccess(getUser(email)) {
+                    case Some(user) => complete(user)
+                    case None => complete(StatusCodes.NotFound)
+                  }
+                }
+              }
+            }
+          )
+        },
+        path("videos") {
+          getTokenData(system) { email =>
             post {
-              entity(as[User]) { user =>
-                onSuccess(createUser(user)) {
+              entity(as[Video]) { video =>
+                onSuccess(addVideo(email, video.videoId)) {
                   case Right(_) => complete(StatusCodes.Created)
                   case Left(_) => complete(StatusCodes.BadRequest)
                 }
               }
             }
-          },
-          path(Segment) { email =>
-            get {
-              rejectEmptyResponse {
-                onSuccess(getUser(email)) {
-                  case Some(user) => complete(user)
-                  case None => complete(StatusCodes.NotFound)
-                }
-              }
-            }
           }
-        )
-      }
+        }
+      )
     }
 
   def getUser(email: String): Future[Option[User]] =
@@ -48,4 +64,7 @@ class UserRoutes(userController: UserController)(implicit system: ActorSystem[?]
 
   def createUser(user: User): Future[Either[Exception, String]] =
     userController.createUser(user)
+
+  def addVideo(email: String, videoId: String): Future[Either[Exception, String]] =
+    userController.addVideo(email, videoId)
 }

@@ -1,5 +1,6 @@
 package io.letsstreamit.services.profile.infrastructure.adapters.repositories
 
+import scala.collection.JavaConverters.*
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 import scala.util.Failure
@@ -15,6 +16,7 @@ import org.mongodb.scala.model.IndexOptions
 import org.mongodb.scala.model.Indexes.*
 
 class MongoUserRepository(implicit ec: ExecutionContext) extends UserRepository {
+
   private val collection = MongoDBConnection.database.getCollection("users")
 
   // Create a unique index on the email field
@@ -32,7 +34,8 @@ class MongoUserRepository(implicit ec: ExecutionContext) extends UserRepository 
           bio = doc.getString("bio") match {
             case bio => Some(bio)
             case null => None
-          }
+          },
+          videos = Some(doc.getList("videos", classOf[String]).asScala.toList)
         )
       )
     }
@@ -42,12 +45,21 @@ class MongoUserRepository(implicit ec: ExecutionContext) extends UserRepository 
     val doc = Document(
       "email" -> user.email,
       "username" -> user.username,
-      "bio" -> user.bio.getOrElse("")
+      "bio" -> user.bio.getOrElse(""),
+      "videos" -> user.videos.getOrElse(List.empty[String])
     )
     collection.insertOne(doc).toFuture().map(_ => Right(s"User ${user.email} created.")).recover {
       case e: MongoWriteException if e.getError().getCategory() == ErrorCategory.DUPLICATE_KEY =>
         Left(new Exception(s"User with email ${user.email} already exists."))
       case e => Left(new Exception(s"Failed to create user: $e"))
+    }
+  }
+
+  override def addVideo(email: String, videoId: String): Future[Either[Exception, String]] = {
+    collection.updateOne(equal("email", email), Document("$push" -> Document("videos" -> videoId))).toFuture().map {
+      updateResult =>
+        if (updateResult.getModifiedCount == 1) Right(s"Video $videoId added to user $email.")
+        else Left(new Exception(s"Failed to add video $videoId to user $email."))
     }
   }
 }
