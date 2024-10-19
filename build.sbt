@@ -20,7 +20,7 @@ runOnLoad := {
   }
 }
 
-val scala3Version = "3.5.2"
+val scala3Version = "3.6.1"
 
 lazy val root = project
   .in(file("."))
