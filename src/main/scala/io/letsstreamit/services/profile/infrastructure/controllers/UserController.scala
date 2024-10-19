@@ -13,6 +13,9 @@ class UserController(userUseCase: UserUseCase) {
   def createUser(user: User): Future[Either[Exception, String]] =
     userUseCase.addUser(user)
 
+  def updateUser(user: User): Future[Either[Exception, String]] =
+    userUseCase.updateUser(user)
+
   def addVideo(email: String, videoId: String): Future[Either[Exception, String]] =
     userUseCase.addVideo(email, videoId)
 }

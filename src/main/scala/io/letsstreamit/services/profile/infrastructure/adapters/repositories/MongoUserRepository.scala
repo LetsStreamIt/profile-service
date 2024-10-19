@@ -55,6 +55,24 @@ class MongoUserRepository(implicit ec: ExecutionContext) extends UserRepository 
     }
   }
 
+  override def updateUser(user: User): Future[Either[Exception, String]] = {
+    collection
+      .updateOne(
+        equal("email", user.email),
+        Document(
+          "$set" -> Document(
+            "username" -> user.username,
+            "bio" -> user.bio.getOrElse("")
+          )
+        )
+      )
+      .toFuture()
+      .map { updateResult =>
+        if (updateResult.getModifiedCount == 1) Right(s"User ${user.email} updated.")
+        else Left(new Exception(s"Failed to update user ${user.email}."))
+      }
+  }
+
   override def addVideo(email: String, videoId: String): Future[Either[Exception, String]] = {
     collection.updateOne(equal("email", email), Document("$push" -> Document("videos" -> videoId))).toFuture().map {
       updateResult =>

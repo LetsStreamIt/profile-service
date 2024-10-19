@@ -13,6 +13,9 @@ class UserService(userRepository: UserRepository) {
   def createUser(user: User): Future[Either[Exception, String]] =
     userRepository.createUser(user)
 
+  def updateUser(user: User): Future[Either[Exception, String]] =
+    userRepository.updateUser(user)
+
   def addVideo(email: String, videoId: String): Future[Either[Exception, String]] =
     userRepository.addVideo(email, videoId)
 }

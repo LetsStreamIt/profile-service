@@ -13,6 +13,9 @@ class UserUseCase(userService: UserService) {
   def addUser(user: User): Future[Either[Exception, String]] =
     userService.createUser(user)
 
+  def updateUser(user: User): Future[Either[Exception, String]] =
+    userService.updateUser(user)
+
   def addVideo(email: String, videoId: String): Future[Either[Exception, String]] =
     userService.addVideo(email, videoId)
 }

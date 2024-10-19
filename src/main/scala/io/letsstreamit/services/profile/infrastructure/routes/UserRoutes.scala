@@ -32,6 +32,21 @@ class UserRoutes(userController: UserController)(implicit system: ActorSystem[?]
                 }
               }
             },
+            path("update") {
+              post {
+                getTokenData(system) { email =>
+                  entity(as[User]) { user =>
+                    if (email != user.email) {
+                      complete(StatusCodes.BadRequest)
+                    }
+                    onSuccess(updateUser(user)) {
+                      case Right(_) => complete(StatusCodes.Created)
+                      case Left(_) => complete(StatusCodes.BadRequest)
+                    }
+                  }
+                }
+              }
+            },
             path(Segment) { email =>
               get {
                 rejectEmptyResponse {
@@ -64,6 +79,9 @@ class UserRoutes(userController: UserController)(implicit system: ActorSystem[?]
 
   def createUser(user: User): Future[Either[Exception, String]] =
     userController.createUser(user)
+
+  def updateUser(user: User): Future[Either[Exception, String]] =
+    userController.updateUser(user)
 
   def addVideo(email: String, videoId: String): Future[Either[Exception, String]] =
     userController.addVideo(email, videoId)
