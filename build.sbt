@@ -24,7 +24,7 @@ lazy val root = project
       "org.mongodb.scala" % "mongo-scala-driver_2.13" % "5.2.0",
       "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion % Test,
       "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion % Test,
-      "org.scalatest" %% "scalatest" % "3.2.12" % Test,
+      "org.scalatest" %% "scalatest" % "3.2.19" % Test,
       "org.scalamock" % "scalamock_3" % "6.0.0"
     ),
     semanticdbEnabled := true,
