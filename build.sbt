@@ -1,5 +1,7 @@
 import scala.sys.process.*
 
+fork := true
+
 lazy val runOnLoad = taskKey[Unit]("Prepares git hooks using node")
 lazy val akkaHttpVersion = "10.6.3"
 lazy val akkaVersion = "2.9.6"
@@ -22,7 +24,8 @@ lazy val root = project
       "org.mongodb.scala" % "mongo-scala-driver_2.13" % "5.2.0",
       "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion % Test,
       "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion % Test,
-      "org.scalatest" %% "scalatest" % "3.2.12" % Test
+      "org.scalatest" %% "scalatest" % "3.2.12" % Test,
+      "org.scalamock" % "scalamock_3" % "6.0.0"
     ),
     semanticdbEnabled := true,
     scalacOptions += {
@@ -34,6 +37,8 @@ lazy val root = project
   )
 
 resolvers += "Akka library repository".at("https://repo.akka.io/maven")
+
+Test / javaOptions += "-Dconfig.file=src/test/resources/application-test.conf"
 
 runOnLoad := {
   // Run npm install silently

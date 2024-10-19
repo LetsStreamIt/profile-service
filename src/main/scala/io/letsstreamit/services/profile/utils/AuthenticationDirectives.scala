@@ -26,62 +26,70 @@ object AuthenticationDirectives {
 
   // Custom Directive to validate token
   def validateToken(implicit system: ActorSystem[?]): Directive1[String] = {
-    headerValueByName("Authorization").flatMap { token =>
-      // Make an HTTP request to the auth-service
-      val responseFuture: Future[HttpResponse] = Http().singleRequest(
-        HttpRequest(
-          method = HttpMethods.POST,
-          uri = s"${ConfigLoader.authUri}/api/auth/validate",
-          headers = List(RawHeader("Authorization", token))
+    if (!ConfigLoader.requireAuth) {
+      provide("no-auth")
+    } else {
+      headerValueByName("Authorization").flatMap { token =>
+        // Make an HTTP request to the auth-service
+        val responseFuture: Future[HttpResponse] = Http().singleRequest(
+          HttpRequest(
+            method = HttpMethods.POST,
+            uri = s"${ConfigLoader.authUri}/api/auth/validate",
+            headers = List(RawHeader("Authorization", token))
+          )
         )
-      )
 
-      // Handle the response from the auth service
-      onComplete(responseFuture).flatMap {
-        case Success(response) if response.status == StatusCodes.OK =>
-          provide(token) // Proceed if valid
-        case Success(_) =>
-          complete(StatusCodes.Unauthorized -> "Invalid token") // Unauthorized if token is not valid
-        case Failure(_) =>
-          complete(
-            StatusCodes.InternalServerError -> "Error contacting auth-service"
-          ) // Error if something goes wrong
+        // Handle the response from the auth service
+        onComplete(responseFuture).flatMap {
+          case Success(response) if response.status == StatusCodes.OK =>
+            provide(token) // Proceed if valid
+          case Success(_) =>
+            complete(StatusCodes.Unauthorized -> "Invalid token") // Unauthorized if token is not valid
+          case Failure(_) =>
+            complete(
+              StatusCodes.InternalServerError -> "Error contacting auth-service"
+            ) // Error if something goes wrong
+        }
       }
     }
   }
 
   def getTokenData(implicit system: ActorSystem[?]): Directive1[String] = {
-    headerValueByName("Authorization").flatMap { token =>
-      // Make an HTTP request to the auth-service
-      val responseFuture: Future[HttpResponse] = Http().singleRequest(
-        HttpRequest(
-          method = HttpMethods.GET,
-          uri = s"${ConfigLoader.authUri}/api/auth/data",
-          headers = List(RawHeader("Authorization", token))
-        )
-      )
-
-      implicit val ec = system.executionContext
-      // Handle the response from the auth service
-      onComplete(responseFuture).flatMap {
-        case Success(response) if response.status == StatusCodes.OK =>
-          provide(
-            Await
-              .result(
-                Unmarshal(response.entity)
-                  .to[AuthResponse]
-                  .recover(_ => complete(StatusCodes.InternalServerError -> "Error parsing response")),
-                ConfigLoader.requestTimeout.toScala
-              ) match
-              case AuthResponse(data) => data.email
-              case _: StandardRoute => ""
+    if (!ConfigLoader.requireAuth) {
+      provide("test@email.com")
+    } else {
+      headerValueByName("Authorization").flatMap { token =>
+        // Make an HTTP request to the auth-service
+        val responseFuture: Future[HttpResponse] = Http().singleRequest(
+          HttpRequest(
+            method = HttpMethods.GET,
+            uri = s"${ConfigLoader.authUri}/api/auth/data",
+            headers = List(RawHeader("Authorization", token))
           )
-        case Success(_) =>
-          complete(StatusCodes.Unauthorized -> "Invalid token") // Unauthorized if token is not valid
-        case Failure(_) =>
-          complete(
-            StatusCodes.InternalServerError -> "Error contacting auth-service"
-          ) // Error if something goes wrong
+        )
+
+        implicit val ec = system.executionContext
+        // Handle the response from the auth service
+        onComplete(responseFuture).flatMap {
+          case Success(response) if response.status == StatusCodes.OK =>
+            provide(
+              Await
+                .result(
+                  Unmarshal(response.entity)
+                    .to[AuthResponse]
+                    .recover(_ => complete(StatusCodes.InternalServerError -> "Error parsing response")),
+                  ConfigLoader.requestTimeout.toScala
+                ) match
+                case AuthResponse(data) => data.email
+                case _: StandardRoute => ""
+            )
+          case Success(_) =>
+            complete(StatusCodes.Unauthorized -> "Invalid token") // Unauthorized if token is not valid
+          case Failure(_) =>
+            complete(
+              StatusCodes.InternalServerError -> "Error contacting auth-service"
+            ) // Error if something goes wrong
+        }
       }
     }
   }

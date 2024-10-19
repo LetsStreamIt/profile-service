@@ -15,5 +15,7 @@ object ConfigLoader {
 
   val port: Int = config.getInt("profile-service.port")
 
+  val requireAuth: Boolean = config.getBoolean("profile-service.require-auth")
+
   val authUri: String = Properties.envOrElse("AUTH_SERVICE_URI", config.getString("auth-service.fallback-uri"))
 }
