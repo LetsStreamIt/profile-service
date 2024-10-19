@@ -4,7 +4,6 @@ import scala.concurrent.Await
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.Duration
 import scala.util.Failure
-import scala.util.Properties
 import scala.util.Success
 
 import akka.actor.typed.ActorSystem
@@ -16,6 +15,7 @@ import akka.util.Timeout
 import io.letsstreamit.services.profile.application.usecases.UserUseCase
 import io.letsstreamit.services.profile.core.services.UserService
 import io.letsstreamit.services.profile.infrastructure.adapters.repositories.MongoUserRepository
+import io.letsstreamit.services.profile.infrastructure.config.ConfigLoader
 import io.letsstreamit.services.profile.infrastructure.controllers.UserController
 import io.letsstreamit.services.profile.infrastructure.routes.UserRoutes
 
@@ -24,8 +24,10 @@ object ProfileServiceApp {
   def main(args: Array[String]): Unit = {
     val rootBehavior: Behavior[Nothing] = Behaviors.setup[Nothing] { context =>
 
+      println("Hello")
+      println(ConfigLoader.requestTimeout)
       val timeout: Timeout =
-        Timeout.create(context.system.settings.config.getDuration("profile-service.routes.ask-timeout"))
+        Timeout.create(ConfigLoader.requestTimeout)
 
       implicit val ec: ExecutionContext = ExecutionContext.global
 
@@ -41,7 +43,7 @@ object ProfileServiceApp {
       val userController = new UserController(userUseCase)
 
       // Initialize HTTP Routes
-      val userRoutes = new UserRoutes(userController).routes
+      val userRoutes = new UserRoutes(userController)(context.system).routes
       // Initialize other routes like ProfilePictureRoutes if any
       // val profilePictureRoutes = new ProfilePictureRoutes(...).routes
 
@@ -63,7 +65,7 @@ object ProfileServiceApp {
   private def startHttpServer(routes: Route)(implicit system: ActorSystem[?]): Unit = {
     import system.executionContext
 
-    val port = Properties.envOrElse("PORT", "3000").toInt
+    val port = ConfigLoader.port
     val futureBinding = Http().newServerAt("localhost", port).bind(routes)
     futureBinding.onComplete {
       case Success(binding) =>
