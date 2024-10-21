@@ -18,60 +18,62 @@ class UserRoutes(userController: UserController)(implicit system: ActorSystem[?]
   import io.letsstreamit.services.profile.utils.JsonFormats.*
 
   val routes: Route =
-    validateToken(system) { token =>
-      concat(
-        pathPrefix("users") {
-          concat(
-            pathEnd {
-              post {
-                entity(as[User]) { user =>
-                  onSuccess(createUser(user)) {
-                    case Right(_) => complete(StatusCodes.Created)
-                    case Left(_) => complete(StatusCodes.BadRequest)
-                  }
-                }
-              }
-            },
-            path("update") {
-              post {
-                getTokenData(system) { email =>
+    cors() {
+      validateToken(system) { token =>
+        concat(
+          pathPrefix("users") {
+            concat(
+              pathEnd {
+                post {
                   entity(as[User]) { user =>
-                    if (email != user.email) {
-                      complete(StatusCodes.BadRequest)
-                    }
-                    onSuccess(updateUser(user)) {
+                    onSuccess(createUser(user)) {
                       case Right(_) => complete(StatusCodes.Created)
                       case Left(_) => complete(StatusCodes.BadRequest)
                     }
                   }
                 }
+              },
+              path("update") {
+                post {
+                  getTokenData(system) { email =>
+                    entity(as[User]) { user =>
+                      if (email != user.email) {
+                        complete(StatusCodes.BadRequest)
+                      }
+                      onSuccess(updateUser(user)) {
+                        case Right(_) => complete(StatusCodes.Created)
+                        case Left(_) => complete(StatusCodes.BadRequest)
+                      }
+                    }
+                  }
+                }
+              },
+              path(Segment) { email =>
+                get {
+                  rejectEmptyResponse {
+                    onSuccess(getUser(email)) {
+                      case Some(user) => complete(user)
+                      case None => complete(StatusCodes.NotFound)
+                    }
+                  }
+                }
               }
-            },
-            path(Segment) { email =>
-              get {
-                rejectEmptyResponse {
-                  onSuccess(getUser(email)) {
-                    case Some(user) => complete(user)
-                    case None => complete(StatusCodes.NotFound)
+            )
+          },
+          path("videos") {
+            getTokenData(system) { email =>
+              post {
+                entity(as[Video]) { video =>
+                  onSuccess(addVideo(email, video.videoId)) {
+                    case Right(_) => complete(StatusCodes.Created)
+                    case Left(_) => complete(StatusCodes.BadRequest)
                   }
                 }
               }
             }
-          )
-        },
-        path("videos") {
-          getTokenData(system) { email =>
-            post {
-              entity(as[Video]) { video =>
-                onSuccess(addVideo(email, video.videoId)) {
-                  case Right(_) => complete(StatusCodes.Created)
-                  case Left(_) => complete(StatusCodes.BadRequest)
-                }
-              }
-            }
           }
-        }
-      )
+        )
+      }
     }
 
   def getUser(email: String): Future[Option[User]] =
