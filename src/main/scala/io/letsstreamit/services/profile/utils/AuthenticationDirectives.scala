@@ -22,9 +22,16 @@ import io.letsstreamit.services.profile.core.models.AuthResponse
 import io.letsstreamit.services.profile.infrastructure.config.ConfigLoader
 import io.letsstreamit.services.profile.utils.AuthJsonProtocol.*
 
+/** AuthenticationDirectives
+  * contains custom directives for authentication
+  */
 object AuthenticationDirectives {
 
-  // Custom Directive to validate token
+  /** validateToken
+    * validates the token provided in the Authorization header
+    * @param system ActorSystem to handle the request
+    * @return Directive1[String] token if valid
+    */
   def validateToken(implicit system: ActorSystem[?]): Directive1[String] = {
     if (!ConfigLoader.requireAuth) {
       provide("no-auth")
@@ -54,6 +61,11 @@ object AuthenticationDirectives {
     }
   }
 
+  /** getTokenData
+    * gets the data from the token provided in the Authorization header
+    * @param system ActorSystem to handle the request
+    * @return Directive1[String] email if valid
+    */
   def getTokenData(implicit system: ActorSystem[?]): Directive1[String] = {
     if (!ConfigLoader.requireAuth) {
       provide("test@email.com")

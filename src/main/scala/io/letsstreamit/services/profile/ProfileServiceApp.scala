@@ -19,13 +19,14 @@ import io.letsstreamit.services.profile.infrastructure.config.ConfigLoader
 import io.letsstreamit.services.profile.infrastructure.controllers.UserController
 import io.letsstreamit.services.profile.infrastructure.routes.UserRoutes
 
+/** ProfileServiceApp
+  * contains the main method to start the Profile Service
+  */
 object ProfileServiceApp {
 
   def main(args: Array[String]): Unit = {
     val rootBehavior: Behavior[Nothing] = Behaviors.setup[Nothing] { context =>
 
-      println("Hello")
-      println(ConfigLoader.requestTimeout)
       val timeout: Timeout =
         Timeout.create(ConfigLoader.requestTimeout)
 
@@ -44,8 +45,6 @@ object ProfileServiceApp {
 
       // Initialize HTTP Routes
       val userRoutes = new UserRoutes(userController)(context.system).routes
-      // Initialize other routes like ProfilePictureRoutes if any
-      // val profilePictureRoutes = new ProfilePictureRoutes(...).routes
 
       // Combine all routes
       val routes: Route = userRoutes // concat(userRoutes, profilePictureRoutes)

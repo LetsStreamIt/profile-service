@@ -12,6 +12,11 @@ import io.letsstreamit.services.profile.infrastructure.controllers.UserControlle
 import io.letsstreamit.services.profile.utils.AuthenticationDirectives.getTokenData
 import io.letsstreamit.services.profile.utils.AuthenticationDirectives.validateToken
 
+/** UserRoutes
+  * responsible for handling user related routes
+  * @param userController UserController to interact with the database
+  * @param system ActorSystem to handle the routes
+  */
 class UserRoutes(userController: UserController)(implicit system: ActorSystem[?]) {
 
   import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport.*
@@ -24,6 +29,7 @@ class UserRoutes(userController: UserController)(implicit system: ActorSystem[?]
           pathPrefix("users") {
             concat(
               pathEnd {
+                // POST /users
                 post {
                   entity(as[User]) { user =>
                     onSuccess(createUser(user)) {
@@ -34,6 +40,7 @@ class UserRoutes(userController: UserController)(implicit system: ActorSystem[?]
                 }
               },
               path("update") {
+                // POST /users/update
                 post {
                   getTokenData(system) { email =>
                     entity(as[User]) { user =>
@@ -49,6 +56,7 @@ class UserRoutes(userController: UserController)(implicit system: ActorSystem[?]
                 }
               },
               path(Segment) { email =>
+                // GET /users/{email}
                 get {
                   rejectEmptyResponse {
                     onSuccess(getUser(email)) {
@@ -62,6 +70,7 @@ class UserRoutes(userController: UserController)(implicit system: ActorSystem[?]
           },
           path("videos") {
             getTokenData(system) { email =>
+              // POST /videos
               post {
                 entity(as[Video]) { video =>
                   onSuccess(addVideo(email, video.videoId)) {

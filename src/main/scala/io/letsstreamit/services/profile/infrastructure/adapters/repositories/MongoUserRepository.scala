@@ -15,6 +15,10 @@ import org.mongodb.scala.model.Filters.*
 import org.mongodb.scala.model.IndexOptions
 import org.mongodb.scala.model.Indexes.*
 
+/** MongoUserRepository
+  * implementation of UserRepository using MongoDB
+  * @param ec ExecutionContext for handling asynchronous operations
+  */
 class MongoUserRepository(implicit ec: ExecutionContext) extends UserRepository {
 
   private val collection = MongoDBConnection.database.getCollection("users")

@@ -7,6 +7,9 @@ import io.letsstreamit.services.profile.core.models.Video
 import spray.json.DefaultJsonProtocol
 import spray.json.RootJsonFormat
 
+/** JsonFormats
+  * contains json formats for the models
+  */
 object JsonFormats {
   import DefaultJsonProtocol._
 
