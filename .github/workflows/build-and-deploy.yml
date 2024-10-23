@@ -12,8 +12,6 @@ jobs:
     env:
       ci: true
       AKKA_LICENSE_KEY: ${{ secrets.AKKA_LICENSE_KEY }}
-      REGISTRY: ghcr.io
-      IMAGE_NAME: ${{ github.repository }}
     steps:
       - name: Checkout
         uses: DanySK/action-checkout@0.2.21
@@ -57,7 +55,7 @@ jobs:
   upload-docs:
     concurrency:
       # Only one release job at a time. Strictly sequential.
-      group: release
+      group: upload-docs
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.scala-version.outputs.version }}
@@ -84,7 +82,10 @@ jobs:
         run: sbt -v doc
       - name: Extract Scala version
         id: scala-version
-        run: echo "version='$(sbt 'show scalaVersion' | grep -oP '(?<=\[info\] )\d+\.\d+\.\d+')'" >> "$GITHUB_OUTPUT"
+        run:
+          echo "version='$(sbt 'show scalaVersion' | grep -oP '(?<=\[info\] )\d+\.\d+\.\d+')'" >> "$GITHUB_OUTPUT"
+          echo "version='$(sbt 'show scalaVersion' | grep -oP '(?<=\[info\] )\d+\.\d+\.\d+')'"
+          echo "version='$(sbt 'show scalaVersion')'"
       - name: Deploy to GitHub Pages
         uses: crazy-max/ghaction-github-pages@v4
         with:
@@ -97,8 +98,11 @@ jobs:
       contents: write
       packages: write
     concurrency:
-      group: release
+      group: deploy-image
     runs-on: ubuntu-latest
+    env:
+      REGISTRY: ghcr.io
+      IMAGE_NAME: ${{ github.repository }}
     needs:
       - release
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
