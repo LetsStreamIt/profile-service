@@ -12,6 +12,8 @@ jobs:
     env:
       ci: true
       AKKA_LICENSE_KEY: ${{ secrets.AKKA_LICENSE_KEY }}
+      REGISTRY: ghcr.io
+      IMAGE_NAME: ${{ github.repository }}
     steps:
       - name: Checkout
         uses: DanySK/action-checkout@0.2.21
@@ -57,6 +59,8 @@ jobs:
       # Only one release job at a time. Strictly sequential.
       group: release
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.scala-version.outputs.version }}
     needs:
       - release
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
@@ -80,7 +84,7 @@ jobs:
         run: sbt -v doc
       - name: Extract Scala version
         id: scala-version
-        run: echo "##[set-output name=version;]$(sbt --error 'show scalaVersion')"
+        run: echo "{version}={$(sbt 'show scalaVersion')}"
       - name: Deploy to GitHub Pages
         uses: crazy-max/ghaction-github-pages@v4
         with:
