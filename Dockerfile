@@ -9,6 +9,8 @@ COPY project /app/project
 
 COPY . /app
 
+RUN sbt compile
+
 EXPOSE 8080
 
 CMD ["sbt", "run"]
