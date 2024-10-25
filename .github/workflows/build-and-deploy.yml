@@ -44,7 +44,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.2.2
-      - uses: actions/setup-node@v4.0.4
+      - uses: actions/setup-node@v4.1.0
         with:
           cache: npm
           node-version: lts/*
@@ -67,7 +67,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.2.2
       - name: build docs
-        uses: actions/setup-node@v4.0.4
+        uses: actions/setup-node@v4.1.0
         with:
           cache: npm
           node-version: lts/*
