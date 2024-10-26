@@ -57,7 +57,7 @@ jobs:
           npx semantic-release > semantic_release_output.txt || true
       - name: Check if release was created
         id: check-release
-        run: |
+        run: >
           if grep -q "no new version is released" semantic_release_output.txt; then
             echo "release_created=false" >> $GITHUB_ENV
           else
