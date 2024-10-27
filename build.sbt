@@ -2,6 +2,11 @@ import scala.sys.process.*
 
 fork := true
 
+enablePlugins(JavaAppPackaging) 
+dockerBaseImage := "openjdk:17"
+dockerExposedPorts ++= Seq(sys.env.getOrElse("PORT", "8080").toInt)
+dockerRepository := Some("ghcr.io/letsstreamit")
+
 lazy val runOnLoad = taskKey[Unit]("Prepares git hooks using node")
 lazy val akkaHttpVersion = "10.6.3"
 lazy val akkaVersion = "2.9.6"
@@ -13,7 +18,8 @@ lazy val root = project
         scalaVersion := scala3Version
       )
     ),
-    name := "LetsStreamIt profile service",
+    name := "profile-service",
+    version := "latest",
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
       "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpVersion,
