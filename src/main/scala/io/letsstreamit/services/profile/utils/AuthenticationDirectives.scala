@@ -56,8 +56,8 @@ object AuthenticationDirectives {
           case Success(_) =>
             system.log.info("Token is invalid")
             complete(StatusCodes.Unauthorized -> "Invalid token") // Unauthorized if token is not valid
-          case Failure(_) =>
-            system.log.info("Error contacting auth-service")
+          case Failure(t) =>
+            system.log.info(s"Error contacting auth-service: ${t.getMessage}")
             complete(
               StatusCodes.InternalServerError -> "Error contacting auth-service"
             ) // Error if something goes wrong
@@ -107,8 +107,8 @@ object AuthenticationDirectives {
           case Success(_) =>
             system.log.info("Token is invalid")
             complete(StatusCodes.Unauthorized -> "Invalid token") // Unauthorized if token is not valid
-          case Failure(_) =>
-            system.log.info("Error contacting auth-service")
+          case Failure(t) =>
+            system.log.info(s"Error contacting auth-service: ${t.getMessage}")
             complete(
               StatusCodes.InternalServerError -> "Error contacting auth-service"
             ) // Error if something goes wrong
