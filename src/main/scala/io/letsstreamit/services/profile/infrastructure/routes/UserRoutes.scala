@@ -24,65 +24,74 @@ class UserRoutes(userController: UserController)(implicit system: ActorSystem[?]
 
   val routes: Route =
     cors() {
-      validateToken(system) { token =>
-        concat(
-          pathPrefix("users") {
-            concat(
-              pathEnd {
-                // POST /users
-                post {
-                  entity(as[User]) { user =>
-                    onSuccess(createUser(user)) {
-                      case Right(_) => complete(StatusCodes.Created)
-                      case Left(_) => complete(StatusCodes.BadRequest)
-                    }
-                  }
-                }
-              },
-              path("update") {
-                // POST /users/update
-                post {
-                  getTokenData(system) { email =>
+      concat(
+        pathPrefix("health") {
+          pathEnd {
+            get {
+              complete(StatusCodes.OK)
+            }
+          }
+        },
+        validateToken(system) { token =>
+          concat(
+            pathPrefix("users") {
+              concat(
+                pathEnd {
+                  // POST /users
+                  post {
                     entity(as[User]) { user =>
-                      if (email != user.email) {
-                        complete(StatusCodes.BadRequest)
-                      }
-                      onSuccess(updateUser(user)) {
+                      onSuccess(createUser(user)) {
                         case Right(_) => complete(StatusCodes.Created)
                         case Left(_) => complete(StatusCodes.BadRequest)
                       }
                     }
                   }
+                },
+                path("update") {
+                  // POST /users/update
+                  post {
+                    getTokenData(system) { email =>
+                      entity(as[User]) { user =>
+                        if (email != user.email) {
+                          complete(StatusCodes.BadRequest)
+                        }
+                        onSuccess(updateUser(user)) {
+                          case Right(_) => complete(StatusCodes.Created)
+                          case Left(_) => complete(StatusCodes.BadRequest)
+                        }
+                      }
+                    }
+                  }
+                },
+                path(Segment) { email =>
+                  // GET /users/{email}
+                  get {
+                    rejectEmptyResponse {
+                      onSuccess(getUser(email)) {
+                        case Some(user) => complete(user)
+                        case None => complete(StatusCodes.NotFound)
+                      }
+                    }
+                  }
                 }
-              },
-              path(Segment) { email =>
-                // GET /users/{email}
-                get {
-                  rejectEmptyResponse {
-                    onSuccess(getUser(email)) {
-                      case Some(user) => complete(user)
-                      case None => complete(StatusCodes.NotFound)
+              )
+            },
+            path("videos") {
+              getTokenData(system) { email =>
+                // POST /videos
+                post {
+                  entity(as[Video]) { video =>
+                    onSuccess(addVideo(email, video.videoId)) {
+                      case Right(_) => complete(StatusCodes.Created)
+                      case Left(_) => complete(StatusCodes.BadRequest)
                     }
                   }
                 }
               }
-            )
-          },
-          path("videos") {
-            getTokenData(system) { email =>
-              // POST /videos
-              post {
-                entity(as[Video]) { video =>
-                  onSuccess(addVideo(email, video.videoId)) {
-                    case Right(_) => complete(StatusCodes.Created)
-                    case Left(_) => complete(StatusCodes.BadRequest)
-                  }
-                }
-              }
             }
-          }
-        )
-      }
+          )
+        }
+      )
     }
 
   def getUser(email: String): Future[Option[User]] =
