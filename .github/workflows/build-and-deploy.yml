@@ -35,8 +35,8 @@ jobs:
     permissions:
       contents: write
       packages: write
-    outputs:
-      release_created: ${{ steps.check-release.outputs.release_created }}
+    # outputs:
+    #   release_created: ${{ steps.check-release.outputs.release_created }}
     concurrency:
       # Only one release job at a time. Strictly sequential.
       group: release
@@ -55,15 +55,16 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           npx semantic-release > semantic_release_output.txt || true
-      - name: Check if release was created
-        id: check-release
-        run: >
-          if grep -q "no new version is released" semantic_release_output.txt; then
-            echo "release_created=false" >> $GITHUB_ENV
-          else
-            echo "release_created=true" >> $GITHUB_ENV
-          fi
-        shell: bash
+          cat semantic_release_output.txt
+      # - name: Check if release was created
+      #   id: check-release
+      #   run: >
+      #     if grep -q "no new version is released" semantic_release_output.txt; then
+      #       echo "release_created=false" >> $GITHUB_ENV
+      #     else
+      #       echo "release_created=true" >> $GITHUB_ENV
+      #     fi
+      #   shell: bash
   upload-docs:
     concurrency:
       # Only one release job at a time. Strictly sequential.
@@ -73,7 +74,8 @@ jobs:
       version: ${{ steps.scala-version.outputs.version }}
     needs:
       - release
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && needs.release.outputs.release_created == 'true'
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' 
+    # && needs.release.outputs.release_created == 'true'
     # Skips if is PR or isn't inside main branch
     steps:
       - name: Checkout
@@ -115,7 +117,8 @@ jobs:
       IMAGE_NAME: ${{ github.repository }}
     needs:
       - release
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && needs.release.outputs.release_created == 'true'
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' 
+    # && needs.release.outputs.release_created == 'true'
     # Skips if is PR or isn't inside main branch
     steps:
       - name: Checkout repository
