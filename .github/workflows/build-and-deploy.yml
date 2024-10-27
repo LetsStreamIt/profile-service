@@ -150,7 +150,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push Docker Image
-        run: docker push ghcr.io/LetsStreamIt/profile-service:latest
+        run: docker push ghcr.io/letsstreamit/profile-service:latest
   success:
     runs-on: ubuntu-latest
     needs:
