@@ -25,7 +25,7 @@ object ConfigLoader {
   /** port
     * the port for the profile service
     */
-  val port: Int = config.getInt("profile-service.port")
+  val port: Int = Properties.envOrElse("PORT", config.getInt("profile-service.port").toString).toInt
 
   /** requireAuth
     * whether the service requires authentication only inteded for testing
