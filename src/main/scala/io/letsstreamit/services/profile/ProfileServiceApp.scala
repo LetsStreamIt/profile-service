@@ -64,8 +64,9 @@ object ProfileServiceApp {
   private def startHttpServer(routes: Route)(implicit system: ActorSystem[?]): Unit = {
     import system.executionContext
 
+    val host = ConfigLoader.host
     val port = ConfigLoader.port
-    val futureBinding = Http().newServerAt("localhost", port).bind(routes)
+    val futureBinding = Http().newServerAt(host, port).bind(routes)
     futureBinding.onComplete {
       case Success(binding) =>
         val address = binding.localAddress

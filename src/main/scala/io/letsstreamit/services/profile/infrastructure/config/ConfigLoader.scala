@@ -12,6 +12,11 @@ import com.typesafe.config.ConfigFactory
 object ConfigLoader {
   private val config = ConfigFactory.load()
 
+  /** address
+    * the address for the profile service
+    */
+  val host: String = Properties.envOrElse("HOST", config.getString("profile-service.host"))
+
   /** requestTimeout
     * the timeout for the ask pattern
     */
