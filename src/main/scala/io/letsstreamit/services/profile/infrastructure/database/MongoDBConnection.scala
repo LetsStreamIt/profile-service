@@ -2,8 +2,8 @@ package io.letsstreamit.services.profile.infrastructure.database
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
-import scala.util.Properties
 
+import io.letsstreamit.services.profile.infrastructure.config.ConfigLoader
 import org.mongodb.scala.MongoClient
 import org.mongodb.scala.MongoDatabase
 
@@ -11,7 +11,9 @@ import org.mongodb.scala.MongoDatabase
   * responsible for handling the connection to the mongo database
   */
 object MongoDBConnection {
-  private val mongoClient: MongoClient = MongoClient(Properties.envOrElse("MONGO_URI", "mongodb://localhost:27017"))
+  private val mongoClient: MongoClient = MongoClient(
+    s"mongodb://${ConfigLoader.mongoHostname}:${ConfigLoader.mongoPort}/profile"
+  )
 
   /** database
     * the database to be used

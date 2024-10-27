@@ -22,10 +22,15 @@ object ConfigLoader {
     */
   val requestTimeout: Duration = config.getDuration("profile-service.routes.ask-timeout")
 
-  /** mongoUri
-    * the uri for the mongo database
+  /** mongoHostname
+    * the hostname for the mongo database
     */
-  val mongoUri: String = Properties.envOrElse("MONGO_URI", config.getString("mongo.fallback-uri"))
+  val mongoHostname: String = Properties.envOrElse("MONGO_HOSTNAME", config.getString("mongo.hostname"))
+
+  /** mongoPort
+    * the port for the mongo database
+    */
+  val mongoPort: Int = Properties.envOrElse("MONGO_PORT", config.getInt("mongo.port").toString).toInt
 
   /** port
     * the port for the profile service
@@ -37,8 +42,16 @@ object ConfigLoader {
     */
   val requireAuth: Boolean = config.getBoolean("profile-service.require-auth")
 
-  /** authUri
-    * the uri for the auth service
+  /** authServiceHostname
+    * the hostname for the auth service
     */
-  val authUri: String = Properties.envOrElse("AUTH_SERVICE_URI", config.getString("auth-service.fallback-uri"))
+  val authServiceHostname: String =
+    Properties.envOrElse("AUTH_SERVICE_HOSTNAME", config.getString("auth-service.hostname"))
+
+  /** authServicePort
+    * the port for the auth service
+    */
+  val authServicePort: Int =
+    Properties.envOrElse("AUTH_SERVICE_PORT", config.getInt("auth-service.port").toString).toInt
+
 }

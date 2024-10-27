@@ -42,7 +42,7 @@ object AuthenticationDirectives {
         val responseFuture: Future[HttpResponse] = Http().singleRequest(
           HttpRequest(
             method = HttpMethods.POST,
-            uri = s"${ConfigLoader.authUri}/api/auth/validate",
+            uri = s"http://${ConfigLoader.authServiceHostname}:${ConfigLoader.authServicePort}/api/auth/validate",
             headers = List(RawHeader("Authorization", token))
           )
         )
@@ -81,7 +81,7 @@ object AuthenticationDirectives {
         val responseFuture: Future[HttpResponse] = Http().singleRequest(
           HttpRequest(
             method = HttpMethods.GET,
-            uri = s"${ConfigLoader.authUri}/api/auth/data",
+            uri = s"http://${ConfigLoader.authServiceHostname}:${ConfigLoader.authServicePort}/api/auth/data",
             headers = List(RawHeader("Authorization", token))
           )
         )
