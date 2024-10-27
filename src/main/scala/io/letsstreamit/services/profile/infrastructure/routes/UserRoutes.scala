@@ -22,6 +22,7 @@ class UserRoutes(userController: UserController)(implicit system: ActorSystem[?]
   import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport.*
   import io.letsstreamit.services.profile.utils.JsonFormats.*
 
+  system.log.info("UserRoutes started")
   val routes: Route =
     cors() {
       concat(
@@ -95,14 +96,18 @@ class UserRoutes(userController: UserController)(implicit system: ActorSystem[?]
     }
 
   def getUser(email: String): Future[Option[User]] =
+    system.log.info(s"Getting user with email: $email")
     userController.getUser(email)
 
   def createUser(user: User): Future[Either[Exception, String]] =
+    system.log.info(s"Creating user with email: ${user.email}")
     userController.createUser(user)
 
   def updateUser(user: User): Future[Either[Exception, String]] =
+    system.log.info(s"Updating user with email: ${user.email}")
     userController.updateUser(user)
 
   def addVideo(email: String, videoId: String): Future[Either[Exception, String]] =
+    system.log.info(s"Adding video with id: $videoId to user with email: $email")
     userController.addVideo(email, videoId)
 }

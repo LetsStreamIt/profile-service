@@ -33,6 +33,7 @@ object AuthenticationDirectives {
     * @return Directive1[String] token if valid
     */
   def validateToken(implicit system: ActorSystem[?]): Directive1[String] = {
+    system.log.info("validating token")
     if (!ConfigLoader.requireAuth) {
       provide("no-auth")
     } else {
@@ -45,14 +46,18 @@ object AuthenticationDirectives {
             headers = List(RawHeader("Authorization", token))
           )
         )
+        system.log.info("Making request to auth-service")
 
         // Handle the response from the auth service
         onComplete(responseFuture).flatMap {
           case Success(response) if response.status == StatusCodes.OK =>
+            system.log.info("Token is valid")
             provide(token) // Proceed if valid
           case Success(_) =>
+            system.log.info("Token is invalid")
             complete(StatusCodes.Unauthorized -> "Invalid token") // Unauthorized if token is not valid
           case Failure(_) =>
+            system.log.info("Error contacting auth-service")
             complete(
               StatusCodes.InternalServerError -> "Error contacting auth-service"
             ) // Error if something goes wrong
@@ -67,6 +72,7 @@ object AuthenticationDirectives {
     * @return Directive1[String] email if valid
     */
   def getTokenData(implicit system: ActorSystem[?]): Directive1[String] = {
+    system.log.info("getting token data")
     if (!ConfigLoader.requireAuth) {
       provide("test@email.com")
     } else {
@@ -80,10 +86,13 @@ object AuthenticationDirectives {
           )
         )
 
+        system.log.info("Making request to auth-service")
+
         implicit val ec = system.executionContext
         // Handle the response from the auth service
         onComplete(responseFuture).flatMap {
           case Success(response) if response.status == StatusCodes.OK =>
+            system.log.info("Token is valid")
             provide(
               Await
                 .result(
@@ -96,8 +105,10 @@ object AuthenticationDirectives {
                 case _: StandardRoute => ""
             )
           case Success(_) =>
+            system.log.info("Token is invalid")
             complete(StatusCodes.Unauthorized -> "Invalid token") // Unauthorized if token is not valid
           case Failure(_) =>
+            system.log.info("Error contacting auth-service")
             complete(
               StatusCodes.InternalServerError -> "Error contacting auth-service"
             ) // Error if something goes wrong
