@@ -47,7 +47,7 @@ object ProfileServiceApp {
       val userRoutes = new UserRoutes(userController)(context.system).routes
 
       // Combine all routes
-      val routes: Route = userRoutes // concat(userRoutes, profilePictureRoutes)
+      val routes: Route = userRoutes
 
       // Start HTTP server
       startHttpServer(routes)(context.system)
