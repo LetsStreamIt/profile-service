@@ -17,7 +17,6 @@ Profile service is the microservice that manages the user profile information in
 
 ![Scala](https://img.shields.io/badge/scala-%23DC322F.svg?style=for-the-badge&logo=scala&logoColor=white)
 ![Akka](https://img.shields.io/badge/akka-%1396B9.svg?style=for-the-badge&logo=akka&logoColor=white)
-![Akka-http](https://img.shields.io/badge/akka-%1396B9.svg?style=for-the-badge&logo=akka&logoColor=white)
 
 ### Infrastructure
 
