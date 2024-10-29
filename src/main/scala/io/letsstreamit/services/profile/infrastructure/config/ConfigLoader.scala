@@ -15,7 +15,7 @@ object ConfigLoader {
   /** address
     * the address for the profile service
     */
-  val host: String = Properties.envOrElse("HOST", config.getString("profile-service.host"))
+  val host: String = Properties.envOrElse("PROFILE_SERVICE_HOSTNAME", config.getString("profile-service.host"))
 
   /** requestTimeout
     * the timeout for the ask pattern
