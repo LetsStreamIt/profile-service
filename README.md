@@ -1,6 +1,7 @@
 # Profile Service
 
 ![CI status](https://github.com/letsstreamit/profile-service/actions/workflows/dispatcher.yml/badge.svg)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![Version](https://img.shields.io/github/v/release/letsstreamit/profile-service?style=plastic)
 
