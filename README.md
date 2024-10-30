@@ -11,12 +11,13 @@
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=LetsStreamIt_profile-service&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=LetsStreamIt_profile-service)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=LetsStreamIt_profile-service&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=LetsStreamIt_profile-service)
 
-Profile service is the microservice that manages the user profile information in the LetsStreamIt platform.
+Profile service is responsible for managing the user profile information in the LetsStreamIt platform.
+It manages the user's username, bio, and watched videos.
 
 ## Technologies
 
 ![Scala](https://img.shields.io/badge/scala-%23DC322F.svg?style=for-the-badge&logo=scala&logoColor=white)
-![Akka](https://img.shields.io/badge/akka-%1396B9.svg?style=for-the-badge&logo=akka&logoColor=white)
+![Akka](https://img.shields.io/badge/akka-%1396B9.svg?style=for-the-badge&logo=scala&logoColor=white)
 
 ### Infrastructure
 
