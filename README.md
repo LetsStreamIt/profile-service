@@ -98,3 +98,8 @@ If you want to contribute to the project, please read the [CONTRIBUTING.md](CONT
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Authors
+
+- Luca Fabri ([w-disaster](https://github.com/w-disaster))
+- Simone Ceredi ([sceredi](https://github.com/sceredi))
