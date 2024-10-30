@@ -4,7 +4,6 @@ fork := true
 
 enablePlugins(JavaAppPackaging) 
 dockerBaseImage := "openjdk:17"
-dockerExposedPorts ++= Seq(sys.env.getOrElse("PORT", "8080").toInt)
 dockerRepository := Some("ghcr.io/letsstreamit")
 
 lazy val runOnLoad = taskKey[Unit]("Prepares git hooks using node")
