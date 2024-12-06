@@ -122,7 +122,7 @@ jobs:
           distribution: temurin
           java-version: 17
       - name: Cache sbt dependencies
-        uses: actions/cache@v4.1.2
+        uses: actions/cache@v4.2.0
         with:
           path: |
             ~/.ivy2/cache
