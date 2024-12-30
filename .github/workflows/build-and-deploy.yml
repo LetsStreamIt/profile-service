@@ -39,20 +39,22 @@ jobs:
       release_created: ${{ steps.check-release.outputs.release_created }}
     concurrency:
       # Only one release job at a time. Strictly sequential.
-      group: release
+      group: release-${{ github.event.number || github.ref }}
     runs-on: ubuntu-latest
     needs:
       - build
     steps:
       - name: Checkout
         uses: actions/checkout@v4.2.2
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v4.1.0
         with:
           cache: npm
           node-version: lts/*
-      - run: npm clean-install
+      - run: HUSKY=0 npm ci
       - env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           npx semantic-release > semantic_release_output.txt || false
           cat semantic_release_output.txt
@@ -63,7 +65,7 @@ jobs:
   upload-docs:
     concurrency:
       # Only one release job at a time. Strictly sequential.
-      group: upload-docs
+      group: upload-docs-${{ github.event.number || github.ref }}
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.scala-version.outputs.version }}
@@ -104,7 +106,7 @@ jobs:
       contents: write
       packages: write
     concurrency:
-      group: deploy-image
+      group: deploy-image-${{ github.event.number || github.ref }}
     runs-on: ubuntu-latest
     env:
       REGISTRY: ghcr.io
