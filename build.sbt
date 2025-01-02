@@ -30,7 +30,7 @@ lazy val root = project
       "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion % Test,
       "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion % Test,
       "org.scalatest" %% "scalatest" % "3.2.19" % Test,
-      "org.scalamock" % "scalamock_3" % "6.0.0"
+      "org.scalamock" % "scalamock_3" % "6.1.1"
     ),
     semanticdbEnabled := true,
     scalacOptions += {
