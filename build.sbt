@@ -2,6 +2,8 @@ import scala.sys.process.*
 
 fork := true
 
+val asd = ""
+
 enablePlugins(JavaAppPackaging) 
 dockerBaseImage := "openjdk:17"
 dockerRepository := Some("ghcr.io/letsstreamit")
