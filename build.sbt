@@ -26,7 +26,7 @@ lazy val root = project
       "com.typesafe.akka" %% "akka-stream" % akkaVersion,
       "com.typesafe.akka" %% "akka-pki" % akkaVersion,
       "ch.qos.logback" % "logback-classic" % "1.5.16",
-      "org.mongodb.scala" % "mongo-scala-driver_2.13" % "5.2.1",
+      "org.mongodb.scala" % "mongo-scala-driver_2.13" % "5.3.0",
       "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion % Test,
       "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion % Test,
       "org.scalatest" %% "scalatest" % "3.2.19" % Test,
